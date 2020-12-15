@@ -1,0 +1,74 @@
+{% extends 'templates/admin.twig' %}
+
+{% block content %}
+    <h1>Сессии</h1>
+
+    <table id="userList" class="display">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>Username</th>
+            <th>Session</th>
+            <th></th>
+
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>id</th>
+            <th>Username</th>
+            <th>Session</th>
+            <th></th>
+
+        </tr>
+        </tfoot>
+    </table>
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            fetch_data();
+
+
+            function fetch_data() {
+                var dataTable = $('#userList').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "ordering": false,
+                    "searching": false,
+                    ajax: {
+                        url: "{{ path_for('admin.users.sessions') }}",
+                        method: "GET",
+
+                    },
+                });
+            }
+
+
+            function logoutUser(id) {
+                $.ajax({
+                    url: "{{ path_for('admin.user.logout') }}",
+                    method: 'POST',
+                    data: {'user_id': id},
+                    success: function (data) {
+                        $('#userList').DataTable().destroy();
+                        fetch_data();
+                    }
+                });
+
+            };
+
+            $(document).on('click', '.delete', function () {
+                var id = $(this).attr("id");
+                if(confirm("Are you sure you want to remove this?"))
+                {
+                logoutUser(id);
+                }
+            });
+
+        });
+    </script>
+{% endblock %}
